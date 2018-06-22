@@ -20,6 +20,7 @@ export default class LineCount {
     private configRule: Array<Object>;
 
     public showStatusBarItem: boolean;
+    public statistics: boolean;
     public EXTENSION_NAME: string;
     public EXTENSION_VERSION: string;
 
@@ -92,11 +93,14 @@ export default class LineCount {
         this.showStatusBarItem = conf.get("showStatusBarItem", true);
         this.eol = conf.get("eol", "\r\n");
         this.encoding = conf.get("encoding", "utf8");
+
+        this.statistics = conf.get("statistics", true);
+
         if (this.encoding.toLowerCase() == "gbk") {
             this.encoding = "utf8";   //node.js不支持gbk编码
         }
 
-        this.outtype = conf.get("output", { "txt": true, "json": false, "csv": false, "md": false, "outdir": "out", "languageDetails": true });
+        this.outtype = conf.get("output", { "txt": true, "json": false, "csv": false, "md": false, "outdir": "out" });
         if (!vscode.workspace.rootPath) {
             this.outpath = './' + this.outtype.outdir;
         } else {
@@ -185,7 +189,7 @@ export default class LineCount {
                         let rule = this.getRule(file.fsPath);
                         let linenum = this.parseRule(data, rule);
                         // collect language details
-                        if (this.outtype["languageDetails"] === true) {
+                        if (this.statistics === true) {
                             let ext = path.extname(file.fsPath);
                             this.updateLanguages(ext, total, linenum);
                         }
@@ -333,7 +337,7 @@ export default class LineCount {
         this.out.appendLine("   total blank lines : " + total['blank']);
         
         // write the language details to output 
-        if (this.outtype["languageDetails"] === true) {
+        if (this.statistics === true) {
             let header = `|${util.pad("extension", 15)}|${util.pad('total code', 15)}|${util.pad("total comment", 15)}|${util.pad("total blank", 15)}|${util.pad("percent", 7)}|`;
             this.out.appendLine('   ' + header);
             this.out.appendLine('   ' + '-'.repeat(header.length))
@@ -429,7 +433,9 @@ export default class LineCount {
 
 
         // write the language details to output 
-        if (this.outtype["languageDetails"] === true) {
+        if (this.statistics === true) {
+            data.push('    statistics' + this.eol);
+            
             let header = `|${util.pad("extension", 15)}|${util.pad('total code', 15)}|${util.pad("total comment", 15)}|${util.pad("total blank", 15)}|${util.pad("percent", 7)}|`;
             data.push('   ' + header + this.eol);
             data.push('   ' + '-'.repeat(header.length) + this.eol)
@@ -549,7 +555,7 @@ export default class LineCount {
             "codesum": total['code'],
             "commentsum": total['comment'],
             "blanksum": total['blank'],
-            "languageDetails": total['languages'],
+            "statistics": total['languages'],
             "filelist": []
         };
 
@@ -622,7 +628,6 @@ export default class LineCount {
      */
     private out_csv(total: any) {
         let filename = path.join(this.outpath, this.EXTENSION_NAME + '.csv');
-        console.log(filename);
 
         //prepare data
         var data = [];
@@ -639,9 +644,9 @@ export default class LineCount {
         data.push(this.eol);
 
         // write the language details to output 
-        if (this.outtype["languageDetails"] === true) {
+        if (this.statistics === true) {
             data.push(this.sepline1);
-            data.push(this.csv_format(["language details"]))
+            data.push(this.csv_format(["statistics"]))
             data.push(this.csv_format(['extension', 'total code', 'total comment', 'total blank', 'percent']));
             for (let key in total.languages) {
                 let value = total.languages[key];
@@ -713,7 +718,6 @@ export default class LineCount {
      */
     private out_md(total: any) {
         let filename = path.join(this.outpath, this.EXTENSION_NAME + '.md');
-        console.log(filename);
 
         //prepare data
         var data = [];
@@ -730,7 +734,9 @@ export default class LineCount {
         data.push(this.eol);
 
         // write the language details to output 
-        if (this.outtype["languageDetails"] === true) {
+        if (this.statistics === true) {
+            data.push(this.eol + "***" + this.eol);//md needed
+            data.push("STATISTICS" + this.eol);
             let languageItems = ['extension', 'total code', 'total comment', 'total blank', 'percent'];
             data.push(this.md_table_format(languageItems));
 

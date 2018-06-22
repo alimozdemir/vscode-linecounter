@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to the "linecounter" extension will be documented in this file.
 
+## Version 0.2.0 (2018-06-22)
+
+1. "languageDetails" setting is changed with "LineCount.statistics". 
+
+2. Now, all output formats support "statistics" setting.
+
+3. Fork is completed. (necessary files are updated.)
+
 ## Version 0.1.9 (2018-06-22)
 
 1. Fixing getExtension

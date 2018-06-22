@@ -5,25 +5,25 @@ This project is forked from [LineCount](https://github.com/yycalm/linecount) pro
 The LineCount extension for Visual Studio Code counts and displays the lines of code, the lines of comment, the lines of blank. 
 
 
-[![Version](https://vsmarketplacebadge.apphb.com/version/yycalm.linecount.svg)](https://marketplace.visualstudio.com/items?itemName=yycalm.linecount)
+[![Version](https://vsmarketplacebadge.apphb.com/version/lyzerk.linecounter.svg)](https://marketplace.visualstudio.com/items?itemName=lyzerk.linecounter)
 
-[![Installs](https://vsmarketplacebadge.apphb.com/installs/yycalm.linecount.svg)](https://marketplace.visualstudio.com/items?itemName=yycalm.linecount)
+[![Installs](https://vsmarketplacebadge.apphb.com/installs/lyzerk.linecounter.svg)](https://marketplace.visualstudio.com/items?itemName=lyzerk.linecounter)
 
-[![Ratings](https://vsmarketplacebadge.apphb.com/rating/yycalm.linecount.svg)](https://marketplace.visualstudio.com/items?itemName=yycalm.linecount)
+[![Ratings](https://vsmarketplacebadge.apphb.com/rating/lyzerk.linecounter.svg)](https://marketplace.visualstudio.com/items?itemName=lyzerk.linecounter)
 
 ---
 
 ## Features
 
-* Count current file. 
+* Count the number of lines of current opened file.
 
-* Count workspace files, you can custom the includes/excludes file pattern.
+* Count the number of lines of workspace files. Also, you can custom the includes/excludes file pattern.
 
 * Support languages: c,cpp,java,js,ts,cs(`//,/*,*/`),sql(`--,/*,*/`),pas(`//,{*,*}`),perl(`#,=pod,=cut`),ruby(`#,=begin,=end`),python(`#,'''`),vb(`'`),html(`<!--,-->`),bat(`::`),sh(`#`),ini(`;`),fortran(`!`),m(`%`).
 
 * You can customize the comment symbol, add new languages support.
 
-* Line number information can be output to JSON, TXT, CSV, Markdown file.
+* Line number information can be output to JSON, TXT, CSV, Markdown file (MD).
 
 ## Installs
 
@@ -34,7 +34,7 @@ The LineCount extension for Visual Studio Code counts and displays the lines of 
     Download source code and install dependencies:
 
 ```
-git clone https://github.com/yycalm/linecount.git
+git clone https://github.com/lyzerk/vscode-linecounter.git
 cd linecount
 npm install
 code .
@@ -43,6 +43,7 @@ code .
 ## Extension Settings
  
 * `LineCount.showStatusBarItem`: (boolean|default `true`) Show/hide the status bar item for LineCount commands.
+* `LineCount.statistics`: (boolean|default `true`) Collecting the statistics of the operation (e.g. Workspace files, Current file)
 * `LineCount.includes`: (string array|default `"**/*"`) Search files pattern.
 * `LineCount.excludes`: (string array|default `"**/.vscode/**,**/node_modules/**"`) files and folders that you want exclude them.
 * `LineCount.output.txt`: (boolean | default `true`) Whether output to TXT file.
@@ -66,6 +67,8 @@ code .
 ```
 
     "LineCount.showStatusBarItem": true,
+
+    "LineCount.statistics": true,
 
     "LineCount.includes": [     
                         "**/*" 
@@ -124,17 +127,17 @@ You can access them from the command palette (Ctrl+Shift+P on Windows/Linux), or
 
 1. LineCount: Count current file:
 
-![Count current file](https://github.com/yycalm/linecount/blob/master/images/countcurrentfile.gif?raw=true)
+![Count current file](https://github.com/lyzerk/vscode-linecounter/blob/master/images/countcurrentfile.gif?raw=true)
 
 
 2. LineCount: Count Workspace files:
 
-![Count workspace files](https://github.com/yycalm/linecount/blob/master/images/countworkspace.gif?raw=true)
+![Count workspace files](https://github.com/lyzerk/vscode-linecounter/blob/master/images/countworkspace.gif?raw=true)
 
 
 ## Support
 
-[Repository](https://github.com/yycalm/linecount)
+[Repository](https://github.com/lyzerk/vscode-linecounter)
 
 
 # License
