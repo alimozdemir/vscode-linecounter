@@ -2,7 +2,7 @@
     "name": "linecounter",
     "displayName": "LineCounter",
     "description": "Count the lines of code.",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "publisher": "lyzerk",
     "icon": "images/icon.png",
     "author": {
@@ -108,7 +108,7 @@
                         "outdir": "out"
                     },
                     "description": "Type of output file."
-                },                
+                },
                 "LineCount.statistics": {
                     "type": "boolean",
                     "default": true,
