@@ -1,7 +1,7 @@
 {
     "name": "linecounter",
     "displayName": "LineCounter",
-    "description": "Count the lines of code.",
+    "description": "Count the lines with statistics.",
     "version": "0.2.1",
     "publisher": "lyzerk",
     "icon": "images/icon.png",
