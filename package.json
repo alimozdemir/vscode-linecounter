@@ -4,7 +4,7 @@
     "description": "Count the lines of code.",
     "version": "0.2.0",
     "publisher": "lyzerk",
-    "icon": "images/counticon.png",
+    "icon": "images/icon.png",
     "author": {
         "name": "yycalm",
         "url": "https://github.com/yycalm",
