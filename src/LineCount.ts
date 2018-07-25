@@ -327,6 +327,12 @@ export default class LineCount {
         }
     }
 
+    private shouldCreateOutPath() {
+        if (this.outtype.txt || this.outtype.json || this.outtype.csv || this.outtype.md) {
+            return !fs.existsSync(this.outpath);
+        }
+        return false;
+    }
 
     private outFile(total: any) {
         this.out.show();
@@ -348,7 +354,7 @@ export default class LineCount {
             }
         }
 
-        if (!fs.existsSync(this.outpath)) {
+        if (this.shouldCreateOutPath()) {
             fs.mkdirSync(this.outpath);
         }
 
