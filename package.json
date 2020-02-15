@@ -2,7 +2,7 @@
     "name": "linecounter",
     "displayName": "Lines of code (LOC)",
     "description": "Count the lines with statistics.",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "publisher": "lyzerk",
     "icon": "images/icon.png",
     "author": {
