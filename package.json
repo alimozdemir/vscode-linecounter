@@ -1,6 +1,6 @@
 {
     "name": "linecounter",
-    "displayName": "LineCounter",
+    "displayName": "Lines of count (LOC)",
     "description": "Count the lines with statistics.",
     "version": "0.2.3",
     "publisher": "lyzerk",
