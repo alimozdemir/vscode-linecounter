@@ -110,17 +110,15 @@ export default class LineCount {
             this.outpath = path.join(vscode.workspace.rootPath, this.outtype.outdir);
         }
 
-        this.listsort = conf.get("sort", 'filename');
-        this.listorder = conf.get("order", 'asc');
+        this.listsort = conf.get('sort', 'filename');
+        this.listorder = conf.get('order', 'asc');
 
         this.includes = "{" + conf.get("includes", "*.*").toString() + "}";
         let s = conf.get("excludes", "**/.vscode/**,**/node_modules/**").toString();
         this.excludes = "{" + s + ',**/' + this.EXTENSION_NAME + '.txt,**/' + this.EXTENSION_NAME + '.json,**/' + this.EXTENSION_NAME + '.csv}';
-        //console.log(this.includes);
-        //console.log(this.excludes);
 
         this.configRule.length = 0;
-        let comment = conf.get('comment') as Array<any>;
+        const comment = conf.get('comment') as Array<any>;
         for (var key in comment) {
             if (comment.hasOwnProperty(key)) {
                 var element = comment[key];
@@ -137,30 +135,31 @@ export default class LineCount {
 
     }
 
-    // Get the current lines count
-    public countCurrentFile(): number {
+    /**
+     * Get the current lines count
+     * @param dry dry run for the status bar
+     */
+    public countCurrentFile(dry: boolean = false): any {
         // Get the current text editor
-        let editor = vscode.window.activeTextEditor;
+        const editor = vscode.window.activeTextEditor;
         if (!editor) {
             vscode.window.showInformationMessage('No open file!');
-            return 0;
+            return null;
         }
 
-        let doc = editor.document;
-        let rule = this.getRule(doc.fileName);
+        const doc = editor.document;
+        const rule = this.getRule(doc.fileName);
 
-        // let isbin = this.isBinaryFile(doc.fileName,doc.getText());
-        // this.out.appendLine(doc.fileName+' is binary file:'+isbin);
+        const linenum = this.parseRule(doc.getText(), rule);
+        if (!dry) {
+            this.out.show();
+            this.out.appendLine(doc.fileName + ' file lines count:');
+            this.out.appendLine(`   code is ${linenum.code} ` + (linenum.code > 1 ? 'lines.' : 'line.'));
+            this.out.appendLine(`   comment is ${linenum.comment} ` + (linenum.comment > 1 ? 'lines.' : 'line.'));
+            this.out.appendLine(`   blank is ${linenum.blank} ` + (linenum.blank > 1 ? 'lines.' : 'line.'));
+        }
 
-
-        let linenum = this.parseRule(doc.getText(), rule);
-
-        this.out.show();
-        this.out.appendLine(doc.fileName + ' file lines count:');
-        this.out.appendLine(`   code is ${linenum.code} ` + (linenum.code > 1 ? 'lines.' : 'line.'));
-        this.out.appendLine(`   comment is ${linenum.comment} ` + (linenum.comment > 1 ? 'lines.' : 'line.'));
-        this.out.appendLine(`   blank is ${linenum.blank} ` + (linenum.blank > 1 ? 'lines.' : 'line.'));
-        return linenum.code;
+        return linenum;
     }
 
     public countWorkspace() {
@@ -173,7 +172,7 @@ export default class LineCount {
 
         let failnum = 0;
         this.filelist.length = 0;
-        //this.filelist.splice(0,this.filelist.length);
+        
         let map: { [extension: string]: number; } = {};
         let total = { files: 0, code: 0, comment: 0, blank: 0, languages: map };
 
@@ -219,7 +218,7 @@ export default class LineCount {
         let old = total.languages[ext];
         let data = { code: linenum.code, comment: linenum.comment, blank: linenum.blank }
 
-        if (old !== undefined) {
+        if (old) {
             data.code += old.code;
             data.comment += old.comment;
             data.blank += old.blank;
@@ -313,7 +312,7 @@ export default class LineCount {
     }
 
     private getRule(filename: string): any {
-        let ext = path.extname(filename).replace('.', "");
+        const ext = path.extname(filename).replace('.', "");
         //console.log(ext);
         if (this.configRule.hasOwnProperty(ext)) {
             return this.configRule[ext];
@@ -426,7 +425,7 @@ export default class LineCount {
         }
 
         //prepare data
-        var data = [];
+        const data = [];
         data.push(this.sepline2 + this.eol);
         data.push("EXTENSION NAME : " + this.EXTENSION_NAME + this.eol);
         data.push("EXTENSION VERSION : " + this.EXTENSION_VERSION + this.eol);

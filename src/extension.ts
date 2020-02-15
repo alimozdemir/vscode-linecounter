@@ -3,27 +3,18 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import  LineCount from './LineCount';
-import * as fs from 'fs';
-import * as path from 'path';
 import { Disposable } from 'vscode';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "linecount" is now active!');
-
+    let subscriptions: Disposable[] = [];
     let counter = new LineCount(context);
     context.subscriptions.push(counter);
 
-    let status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left,-100);
-    status.text = 'LineCount';
-    status.text = '0 LOC';
+    let status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, -100);
+    statusBarText(0, 0);
     status.command = 'extension.linecount.showcommands';
     context.subscriptions.push(status);
-    let subscriptions: Disposable[] = [];
     vscode.window.onDidChangeActiveTextEditor(onActiveEditorChange, this, subscriptions);
     let disposConfig = vscode.workspace.onDidChangeConfiguration(configChanged);
     context.subscriptions.push(disposConfig);
@@ -36,10 +27,10 @@ export function activate(context: vscode.ExtensionContext) {
     
     let disposable3 = vscode.commands.registerCommand('extension.linecount.showcommands', () => {
         let items = [];
-        items.push({label: "LineCount: Count current file", detail: "Count lines for current file.",  description: null, command: countCurrentFile });
-        items.push({label: "LineCount: Count Workspace files", detail: "Count lines for Workspace files.",  description: null, command: countWorkspace });
+        items.push({label: 'LineCount: Count current file', detail: 'Count lines for current file.',  description: null, command: countCurrentFile });
+        items.push({label: 'LineCount: Count Workspace files', detail: 'Count lines for Workspace files.',  description: null, command: countWorkspace });
         vscode.window.showQuickPick(items, { matchOnDetail: true, matchOnDescription: true }).then(selectedItem => {
-            if (selectedItem && typeof selectedItem.command === "function") {
+            if (selectedItem && typeof selectedItem.command === 'function') {
                 selectedItem.command();
             }
         });               
@@ -59,8 +50,20 @@ export function activate(context: vscode.ExtensionContext) {
     function countWorkspace(){
         counter.countWorkspace();
     }
+    function statusBarText(line: number, comment: number) {
+        if (line === 0) {
+            status.text = `No LOC`
+        } else {
+            status.text = `${line} LOC, ${comment} Comment`;
+        }
+    }
     function onActiveEditorChange(){
-        
+        if (!vscode.window.activeTextEditor) {
+            return;
+        }
+        const result = counter.countCurrentFile(true);
+
+        statusBarText(result.code, result.comment);
     }
     configChanged();
 }
