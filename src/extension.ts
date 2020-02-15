@@ -5,6 +5,7 @@ import * as vscode from 'vscode';
 import  LineCount from './LineCount';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Disposable } from 'vscode';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -19,9 +20,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     let status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left,-100);
     status.text = 'LineCount';
+    status.text = '0 LOC';
     status.command = 'extension.linecount.showcommands';
     context.subscriptions.push(status);
-
+    let subscriptions: Disposable[] = [];
+    vscode.window.onDidChangeActiveTextEditor(onActiveEditorChange, this, subscriptions);
     let disposConfig = vscode.workspace.onDidChangeConfiguration(configChanged);
     context.subscriptions.push(disposConfig);
 
@@ -56,7 +59,9 @@ export function activate(context: vscode.ExtensionContext) {
     function countWorkspace(){
         counter.countWorkspace();
     }
-
+    function onActiveEditorChange(){
+        
+    }
     configChanged();
 }
 

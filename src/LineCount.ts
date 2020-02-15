@@ -57,6 +57,9 @@ export default class LineCount {
         this.builtinRule['css'] = cstyle;
         this.builtinRule['cs'] = cstyle;
         this.builtinRule['jsp'] = cstyle;
+        /*['c', 'cpp', 'h', 'hpp', 'java', 'js', 'ts', 'css', 'cs', 'jsp']
+            .forEach(i => this.builtinRule[i] = cstyle)*/
+
         let podstyle = { "linecomment": "#", "blockstart": "=pod", "blockend": "=cut", "blocktol": true, "string": { "doublequotes": true, "singlequotes": true } };
         this.builtinRule['perl'] = podstyle;
         this.builtinRule['pl'] = podstyle;
@@ -117,7 +120,7 @@ export default class LineCount {
         //console.log(this.excludes);
 
         this.configRule.length = 0;
-        let comment = conf.get('comment');
+        let comment = conf.get('comment') as Array<any>;
         for (var key in comment) {
             if (comment.hasOwnProperty(key)) {
                 var element = comment[key];
@@ -135,12 +138,12 @@ export default class LineCount {
     }
 
     // Get the current lines count
-    public countCurrentFile() {
+    public countCurrentFile(): number {
         // Get the current text editor
         let editor = vscode.window.activeTextEditor;
         if (!editor) {
             vscode.window.showInformationMessage('No open file!');
-            return;
+            return 0;
         }
 
         let doc = editor.document;
@@ -157,7 +160,7 @@ export default class LineCount {
         this.out.appendLine(`   code is ${linenum.code} ` + (linenum.code > 1 ? 'lines.' : 'line.'));
         this.out.appendLine(`   comment is ${linenum.comment} ` + (linenum.comment > 1 ? 'lines.' : 'line.'));
         this.out.appendLine(`   blank is ${linenum.blank} ` + (linenum.blank > 1 ? 'lines.' : 'line.'));
-
+        return linenum.code;
     }
 
     public countWorkspace() {
