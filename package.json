@@ -2,7 +2,7 @@
     "name": "linecounter",
     "displayName": "Lines of code (LOC)",
     "description": "Count the lines with statistics.",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "publisher": "lyzerk",
     "icon": "images/icon.png",
     "author": {
@@ -21,11 +21,11 @@
         "url": "https://github.com/lyzerk/vscode-linecounter.git"
     },
     "keywords": [
+        "loc",
         "linecount",
-        "line",
+        "linesofcode",
         "counter",
-        "codeline",
-        "codecount"
+        "comment"
     ],
     "engines": {
         "vscode": "^1.5.0"
