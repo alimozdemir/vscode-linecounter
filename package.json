@@ -2,7 +2,7 @@
     "name": "linecounter",
     "displayName": "LineCounter",
     "description": "Count the lines with statistics.",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "publisher": "lyzerk",
     "icon": "images/icon.png",
     "author": {
