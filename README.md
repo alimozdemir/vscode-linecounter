@@ -1,8 +1,8 @@
-# LineCounter README
+# Lines of code (linecounter)
 
-This project is forked from [LineCount](https://github.com/yycalm/linecount) project. Author of the project is not resposing any PR or Issue and he does not developed the extesion for 1 year. So, we have published the extension under a new name.
+This project is forked from [LineCount](https://github.com/yycalm/linecount) project. Author of the project is not resposing any PRs or Issue and he does not developed the extesion since 1 year. So, we have published the extension under a new name.
 
-The LineCount extension for Visual Studio Code counts and displays the lines of code, the lines of comment, the lines of blank. 
+The Lines of code extension for Visual Studio Code counts and displays the lines of code, the lines of comment, the lines of blank. 
 
 
 [![Version](https://vsmarketplacebadge.apphb.com/version/lyzerk.linecounter.svg)](https://marketplace.visualstudio.com/items?itemName=lyzerk.linecounter)
