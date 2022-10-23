@@ -49,6 +49,10 @@
             {
                 "command": "extension.linecount.workspace",
                 "title": "LineCount: Count Workspace files"
+            },
+            {
+                "command": "extension.linecount.folder",
+                "title": "LineCount: Count a folder"
             }
         ],
         "configuration": {
@@ -136,6 +140,14 @@
                     "description": "Specify ascending or descending order."
                 }
             }
+        },
+        "menus": {
+            "explorer/context": [
+                {
+                    "command": "extension.linecount.folder",
+                    "when": "explorerResourceIsFolder"
+                }
+            ]
         }
     },
     "scripts": {
@@ -148,9 +160,9 @@
         "@types/node": "^13.7.1"
     },
     "devDependencies": {
-        "typescript": "^2.0.3",
-        "vscode": "^1.0.0",
+        "@types/mocha": "^7.0.1",
         "mocha": "^7.0.1",
-        "@types/mocha": "^7.0.1"
+        "typescript": "^2.0.3",
+        "vscode": "^1.1.37"
     }
 }

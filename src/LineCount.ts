@@ -162,21 +162,16 @@ export default class LineCount {
         return linenum;
     }
 
-    public countWorkspace() {
-        if (!vscode.workspace.rootPath) {
-            vscode.window.showInformationMessage('No open workspace!');
-            return;
-        }
-
-        let dir = path.join(vscode.workspace.rootPath, path.sep);
+    public countFolder(dir: string) {
 
         let failnum = 0;
         this.filelist.length = 0;
-        
+
         let map: { [extension: string]: number; } = {};
         let total = { files: 0, code: 0, comment: 0, blank: 0, languages: map };
 
-        let ff = vscode.workspace.findFiles(this.includes, this.excludes);
+        let include_pattern = new vscode.RelativePattern(dir, this.includes);
+        let ff = vscode.workspace.findFiles(include_pattern, this.excludes);
         ff.then((files: vscode.Uri[]) => {
             files.forEach((file: vscode.Uri) => {
 
@@ -184,7 +179,7 @@ export default class LineCount {
                     if (err) {
                         failnum++;
                     } else if (this.isBinaryFile(file.fsPath, data)) {
-                        let fn = file.fsPath.replace(dir, "");
+                        let fn = file.fsPath.replace(path.join(dir, path.sep), "");
                         let linenum = { filename: fn, isbinaryfile: true, blank: 0, code: 0, comment: 0 };
                         this.filelist.push(linenum);
                     } else {
@@ -197,7 +192,7 @@ export default class LineCount {
                         }
 
                         //去掉前缀目录名
-                        linenum.filename = file.fsPath.replace(dir, "");
+                        linenum.filename = file.fsPath.replace(path.join(dir, path.sep), "");
                         this.filelist.push(linenum);
                         total.code = total.code + linenum.code;
                         total.comment = total.comment + linenum.comment;
@@ -205,7 +200,7 @@ export default class LineCount {
                     }
 
                     if (this.filelist.length + failnum == files.length) {
-                        this.outFile(total);
+                        this.outFile(total, dir);
                     }
                 });
             });
@@ -336,14 +331,15 @@ export default class LineCount {
         return false;
     }
 
-    private outFile(total: any) {
+    private outFile(total: any, dir: string) {
         this.out.show();
-        this.out.appendLine(vscode.workspace.rootPath + " workspace lines count: ");
+        this.out.appendLine("   workspace: " + vscode.workspace.rootPath);
+        this.out.appendLine("   folder: " + dir);
         this.out.appendLine("   total files : " + this.filelist.length.toString());
         this.out.appendLine("   total code lines : " + total['code']);
         this.out.appendLine("   total comment lines : " + total['comment']);
         this.out.appendLine("   total blank lines : " + total['blank']);
-        
+
         // write the language details to output 
         if (this.statistics === true) {
             let header = `|${util.pad("extension", 15)}|${util.pad('total code', 15)}|${util.pad("total comment", 15)}|${util.pad("total blank", 15)}|${util.pad("percent", 7)}|`;
@@ -402,20 +398,20 @@ export default class LineCount {
 
 
         if (this.outtype.txt) {
-            this.out_txt(total);
+            this.out_txt(total, dir);
         }
         if (this.outtype.json) {
-            this.out_json(total);
+            this.out_json(total, dir);
         }
         if (this.outtype.csv) {
-            this.out_csv(total);
+            this.out_csv(total, dir);
         }
         if (this.outtype.md) {
-            this.out_md(total);
+            this.out_md(total, dir);
         }
     }
 
-    private out_txt(total: any) {
+    private out_txt(total: any, dir: string) {
         let filename = path.join(this.outpath, this.EXTENSION_NAME + '.txt');
         console.log(filename);
 
@@ -432,6 +428,7 @@ export default class LineCount {
         data.push(this.sepline1 + this.eol);
         data.push("count time : " + util.getDateTime() + this.eol);
         data.push("count workspace : " + vscode.workspace.rootPath + this.eol);
+        data.push("count folder : " + dir + this.eol);
         data.push("total files : " + this.filelist.length.toString() + this.eol);
         data.push("total code lines : " + total['code'] + this.eol);
         data.push("total comment lines : " + total['comment'] + this.eol);
@@ -443,7 +440,7 @@ export default class LineCount {
         // write the language details to output 
         if (this.statistics === true) {
             data.push('    statistics' + this.eol);
-            
+
             let header = `|${util.pad("extension", 15)}|${util.pad('total code', 15)}|${util.pad("total comment", 15)}|${util.pad("total blank", 15)}|${util.pad("percent", 7)}|`;
             data.push('   ' + header + this.eol);
             data.push('   ' + '-'.repeat(header.length) + this.eol)
@@ -507,7 +504,7 @@ export default class LineCount {
         });
     }
 
-    private out_json(total: any) {
+    private out_json(total: any, dir: string) {
         let filename = path.join(this.outpath, this.EXTENSION_NAME + '.json');
         let obj: any;
         if (fs.existsSync(filename)) {
@@ -537,6 +534,9 @@ export default class LineCount {
                 if (!obj.hasOwnProperty('workspace')) {
                     obj['workspace'] = vscode.workspace.rootPath;
                 }
+                if (!obj.hasOwnProperty('folder')) {
+                    obj['folder'] = dir;
+                }
                 if (!obj.hasOwnProperty('linecount')) {
                     obj['linecount'] = [];
                 }
@@ -552,6 +552,7 @@ export default class LineCount {
                 "extension": this.EXTENSION_NAME,
                 "version": this.EXTENSION_VERSION,
                 "workspace": vscode.workspace.rootPath,
+                "folder": dir,
                 "linecount": []
             };
         }
@@ -634,7 +635,7 @@ export default class LineCount {
      * for csv output, there may come a potential error while csv is opened by other applications.
      * @param total 
      */
-    private out_csv(total: any) {
+    private out_csv(total: any, dir: string) {
         let filename = path.join(this.outpath, this.EXTENSION_NAME + '.csv');
 
         //prepare data
@@ -645,6 +646,7 @@ export default class LineCount {
         data.push(this.sepline1 + this.eol);
         data.push(this.csv_format(["count time", util.getDateTime()]));
         data.push(this.csv_format(["count workspace", vscode.workspace.rootPath]));
+        data.push(this.csv_format(["count folder", dir]));
         data.push(this.csv_format(["total files", this.filelist.length.toString()]));
         data.push(this.csv_format(["total code lines", total['code']]));
         data.push(this.csv_format(["total comment lines", total['comment']]));
@@ -662,7 +664,7 @@ export default class LineCount {
 
                 data.push(this.csv_format([key, value['code'], value['comment'], value['blank'], percent]));
             }
-            
+
             data.push(this.sepline1 + this.eol);
         }
 
@@ -724,7 +726,7 @@ export default class LineCount {
      * for markdown output
      * @param total 
      */
-    private out_md(total: any) {
+    private out_md(total: any, dir: string) {
         let filename = path.join(this.outpath, this.EXTENSION_NAME + '.md');
 
         //prepare data
@@ -735,6 +737,7 @@ export default class LineCount {
         data.push(this.eol + "***" + this.eol);//md needed
         data.push(this.md_line_format(["count time", util.getDateTime()]));
         data.push(this.md_line_format(["count workspace", vscode.workspace.rootPath]));
+        data.push(this.md_line_format(["count folder", dir]));
         data.push(this.md_line_format(["total files", this.filelist.length.toString()]));
         data.push(this.md_line_format(["total code lines", total['code']]));
         data.push(this.md_line_format(["total comment lines", total['comment']]));
@@ -757,7 +760,7 @@ export default class LineCount {
                 let percent = ((value['code'] / total['code']) * 100).toPrecision(2);
                 data.push(this.md_table_format([key, value['code'], value['comment'], value['blank'], percent]));
             }
-            
+
             data.push("|||||" + this.eol);
             data.push("***" + this.eol);
             data.push(this.eol);
